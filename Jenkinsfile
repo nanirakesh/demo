@@ -12,7 +12,7 @@ pipeline {
             steps {
                 sh '''
                 ls  -la
-                mvn -version
+                echo "mvn -version"
                 '''
             }
         }
