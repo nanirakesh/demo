@@ -2,7 +2,7 @@ pipeline {
     agent none
 
     environment {
-        JAR_NAME = 'target/demo-0.0.1-SNAPSHOT.jar' // or 'target/app.jar' if using <finalName>
+        JAR_NAME = 'target/demo-0.0.1-SNAPSHOT.jar'
     }
 
     stages {
@@ -44,7 +44,7 @@ pipeline {
 
     post {
         always {
-            node {
+            node('master') { // ✅ Use your actual Jenkins agent label here
                 echo "🧹 Cleanup"
                 sh "pkill -f '${JAR_NAME}' || true"
                 sh "cat app.log || true"
