@@ -2,7 +2,7 @@ pipeline {
     agent none
 
     environment {
-        JAR_NAME = 'target/app.jar' // Change to 'target/demo-0.0.1-SNAPSHOT.jar' if not using <finalName>
+        JAR_NAME = 'target/app.jar' // or 'target/demo-0.0.1-SNAPSHOT.jar' if no <finalName>
     }
 
     stages {
@@ -17,22 +17,22 @@ pipeline {
 
             steps {
                 script {
-                    echo "🔧 Starting Maven build..."
+                    echo "🏗️ Building the Spring Boot app..."
                     sh 'mvn clean package'
 
-                    echo "📦 Checking built JAR"
+                    echo "📁 List build artifacts:"
                     sh 'ls -lh target/'
 
-                    echo "🚀 Running Spring Boot application"
+                    echo "🚀 Starting the app in background..."
                     sh """
                         nohup java -jar ${env.JAR_NAME} > app.log 2>&1 &
                         sleep 10
                     """
 
-                    echo "🔍 Running health check"
+                    echo "🩺 Health check (Spring Actuator)..."
                     sh """
                         curl -f http://localhost:8080/actuator/health || {
-                          echo '❌ Health check failed';
+                          echo '❌ App health check failed';
                           cat app.log;
                           exit 1;
                         }
@@ -44,7 +44,7 @@ pipeline {
 
     post {
         always {
-            echo "🧹 Cleaning up..."
+            echo "🧹 Cleanup"
             sh "pkill -f '${JAR_NAME}' || true"
             sh "cat app.log || true"
         }
