@@ -2,7 +2,7 @@ pipeline {
     agent none
 
     environment {
-        JAR_NAME = 'target/app.jar' // or 'target/demo-0.0.1-SNAPSHOT.jar' if no <finalName>
+        JAR_NAME = 'target/demo-0.0.1-SNAPSHOT.jar' // or 'target/app.jar' if using <finalName>
     }
 
     stages {
@@ -10,7 +10,7 @@ pipeline {
             agent {
                 docker {
                     image 'maven:3.9.9-eclipse-temurin-21-alpine'
-                    args '-v $HOME/.m2:/root/.m2'
+                    args '-v ${HOME}/.m2:/root/.m2'
                     reuseNode true
                 }
             }
@@ -44,9 +44,11 @@ pipeline {
 
     post {
         always {
-            echo "🧹 Cleanup"
-            sh "pkill -f '${JAR_NAME}' || true"
-            sh "cat app.log || true"
+            node {
+                echo "🧹 Cleanup"
+                sh "pkill -f '${JAR_NAME}' || true"
+                sh "cat app.log || true"
+            }
         }
     }
 }
